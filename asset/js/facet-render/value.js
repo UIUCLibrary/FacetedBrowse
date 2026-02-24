@@ -23,7 +23,6 @@ $(document).ready(function() {
 
 const container = $('#container');
 let timerId;
-let isArrowKeyNavigation = false;
 
 const getQuery = function(index, property, type, text, joiner) {
     if (['ex', 'nex'].includes(type)) {
@@ -86,28 +85,37 @@ const handleUserInteraction = function(thisValue) {
     FacetedBrowse.triggerStateChange();
 };
 
-// Track arrow key navigation to prevent auto-submit
-container.on('keydown', 'input.value[type="radio"]', function(e) {
-    // Arrow keys: Left (37), Up (38), Right (39), Down (40)
-    if ([37, 38, 39, 40].includes(e.keyCode)) {
-        isArrowKeyNavigation = true;
-    }
-});
-
 // Handle single_select interaction.
 container.on('change', 'select.value', function(e) {
     handleUserInteraction($(this));
 });
 
+// Handle keyboard navigation for radio buttons
+container.on('keydown', 'input.value[type="radio"]', function(e) {
+    const currentRadio = $(this);
+    const radioGroup = currentRadio.closest('.select-list');
+    const allRadios = radioGroup.find('input.value[type="radio"]').filter(':visible');
+    const currentIndex = allRadios.index(currentRadio);
+    
+    // Arrow keys: prevent default selection behavior and just move focus
+    if (e.keyCode === 38 || e.keyCode === 37) { // Up or Left arrow
+        e.preventDefault();
+        const prevIndex = currentIndex > 0 ? currentIndex - 1 : allRadios.length - 1;
+        allRadios.eq(prevIndex).focus();
+    } else if (e.keyCode === 40 || e.keyCode === 39) { // Down or Right arrow
+        e.preventDefault();
+        const nextIndex = currentIndex < allRadios.length - 1 ? currentIndex + 1 : 0;
+        allRadios.eq(nextIndex).focus();
+    } else if (e.keyCode === 32 || e.keyCode === 13) { // Space or Enter
+        // Prevent default, check the radio, then trigger our handler
+        e.preventDefault();
+        currentRadio.prop('checked', true).trigger('change');
+    }
+});
+
 // Handle single_list interaction.
 container.on('click change', 'input.value[type="radio"]', function(e) {
     const thisValue = $(this);
-    // Skip submission if this is arrow key navigation
-    if (e.type === 'change' && isArrowKeyNavigation) {
-        isArrowKeyNavigation = false;
-        FacetedBrowse.updateSelectList(thisValue.closest('.select-list'));
-        return;
-    }
     handleUserInteraction(thisValue);
     FacetedBrowse.updateSelectList(thisValue.closest('.select-list'));
 });
