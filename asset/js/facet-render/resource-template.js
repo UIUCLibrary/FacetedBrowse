@@ -54,29 +54,6 @@ container.on('change', 'select.resource-template', function(e) {
     handleUserInteraction($(this));
 });
 
-// Handle keyboard navigation for radio buttons
-container.on('keydown', 'input.resource-template[type="radio"]', function(e) {
-    const currentRadio = $(this);
-    const radioGroup = currentRadio.closest('.select-list');
-    const allRadios = radioGroup.find('input.resource-template[type="radio"]').filter(':visible');
-    const currentIndex = allRadios.index(currentRadio);
-    
-    // Arrow keys: prevent default selection behavior and just move focus
-    if (e.keyCode === 38 || e.keyCode === 37) { // Up or Left arrow
-        e.preventDefault();
-        const prevIndex = currentIndex > 0 ? currentIndex - 1 : allRadios.length - 1;
-        allRadios.eq(prevIndex).focus();
-    } else if (e.keyCode === 40 || e.keyCode === 39) { // Down or Right arrow
-        e.preventDefault();
-        const nextIndex = currentIndex < allRadios.length - 1 ? currentIndex + 1 : 0;
-        allRadios.eq(nextIndex).focus();
-    } else if (e.keyCode === 32 || e.keyCode === 13) { // Space or Enter
-        // Prevent default, check the radio, then trigger our handler
-        e.preventDefault();
-        currentRadio.prop('checked', true).trigger('change');
-    }
-});
-
 container.on('click change', 'input.resource-template', function(e) {
     const thisValue = $(this);
     handleUserInteraction($(this));
