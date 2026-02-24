@@ -23,6 +23,7 @@ $(document).ready(function() {
 
 const container = $('#container');
 let timerId;
+let isArrowKeyNavigation = false;
 
 const getQuery = function(index, property, type, text, joiner) {
     if (['ex', 'nex'].includes(type)) {
@@ -85,6 +86,14 @@ const handleUserInteraction = function(thisValue) {
     FacetedBrowse.triggerStateChange();
 };
 
+// Track arrow key navigation to prevent auto-submit
+container.on('keydown', 'input.value[type="radio"]', function(e) {
+    // Arrow keys: Left (37), Up (38), Right (39), Down (40)
+    if ([37, 38, 39, 40].includes(e.keyCode)) {
+        isArrowKeyNavigation = true;
+    }
+});
+
 // Handle single_select interaction.
 container.on('change', 'select.value', function(e) {
     handleUserInteraction($(this));
@@ -93,6 +102,12 @@ container.on('change', 'select.value', function(e) {
 // Handle single_list interaction.
 container.on('click change', 'input.value[type="radio"]', function(e) {
     const thisValue = $(this);
+    // Skip submission if this is arrow key navigation
+    if (e.type === 'change' && isArrowKeyNavigation) {
+        isArrowKeyNavigation = false;
+        FacetedBrowse.updateSelectList(thisValue.closest('.select-list'));
+        return;
+    }
     handleUserInteraction(thisValue);
     FacetedBrowse.updateSelectList(thisValue.closest('.select-list'));
 });

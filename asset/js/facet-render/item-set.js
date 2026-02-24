@@ -20,6 +20,7 @@ FacetedBrowse.registerFacetApplyStateHandler('item_set', function(facet, facetSt
 $(document).ready(function() {
 
 const container = $('#container');
+let isArrowKeyNavigation = false;
 
 const handleUserInteraction = function(thisItemSet) {
     const facet = thisItemSet.closest('.facet');
@@ -54,8 +55,22 @@ container.on('change', 'select.item-set', function(e) {
     handleUserInteraction($(this));
 });
 
+// Track arrow key navigation to prevent auto-submit
+container.on('keydown', 'input.item-set', function(e) {
+    // Arrow keys: Left (37), Up (38), Right (39), Down (40)
+    if ([37, 38, 39, 40].includes(e.keyCode)) {
+        isArrowKeyNavigation = true;
+    }
+});
+
 container.on('click change', 'input.item-set', function(e) {
     const thisValue = $(this);
+    // Skip submission if this is arrow key navigation
+    if (e.type === 'change' && isArrowKeyNavigation) {
+        isArrowKeyNavigation = false;
+        FacetedBrowse.updateSelectList(thisValue.closest('.select-list'));
+        return;
+    }
     handleUserInteraction($(this));
     FacetedBrowse.updateSelectList(thisValue.closest('.select-list'));
 });

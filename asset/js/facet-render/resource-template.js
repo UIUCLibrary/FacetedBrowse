@@ -20,6 +20,7 @@ FacetedBrowse.registerFacetApplyStateHandler('resource_template', function(facet
 $(document).ready(function() {
 
 const container = $('#container');
+let isArrowKeyNavigation = false;
 
 const handleUserInteraction = function(thisTemplate) {
     const facet = thisTemplate.closest('.facet');
@@ -50,13 +51,26 @@ const handleUserInteraction = function(thisTemplate) {
     FacetedBrowse.triggerStateChange();
 };
 
-
 container.on('change', 'select.resource-template', function(e) {
     handleUserInteraction($(this));
 });
 
+// Track arrow key navigation to prevent auto-submit
+container.on('keydown', 'input.resource-template', function(e) {
+    // Arrow keys: Left (37), Up (38), Right (39), Down (40)
+    if ([37, 38, 39, 40].includes(e.keyCode)) {
+        isArrowKeyNavigation = true;
+    }
+});
+
 container.on('click change', 'input.resource-template', function(e) {
     const thisValue = $(this);
+    // Skip submission if this is arrow key navigation
+    if (e.type === 'change' && isArrowKeyNavigation) {
+        isArrowKeyNavigation = false;
+        FacetedBrowse.updateSelectList(thisValue.closest('.select-list'));
+        return;
+    }
     handleUserInteraction($(this));
     FacetedBrowse.updateSelectList(thisValue.closest('.select-list'));
 });
