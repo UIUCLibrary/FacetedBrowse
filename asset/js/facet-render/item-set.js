@@ -30,7 +30,7 @@ const handleUserInteraction = function(thisItemSet) {
         case 'single_list':
             facet.find('.item-set').not(thisItemSet).removeClass('selected');
             thisItemSet.prop('checked', !thisItemSet.hasClass('selected'));
-            break;
+            // Fall through to toggle selected class
         case 'multiple_list':
             thisItemSet.toggleClass('selected');
             break;
