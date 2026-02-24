@@ -40,7 +40,7 @@ const handleUserInteraction = function(thisValue) {
         case 'single_list':
             facet.find('.value').not(thisValue).removeClass('selected');
             thisValue.prop('checked', !thisValue.hasClass('selected'));
-            break
+            break;
         case 'multiple_list':
             thisValue.toggleClass('selected');
             break;

@@ -30,6 +30,7 @@ const handleUserInteraction = function(thisItemSet) {
         case 'single_list':
             facet.find('.item-set').not(thisItemSet).removeClass('selected');
             thisItemSet.prop('checked', !thisItemSet.hasClass('selected'));
+            break;
         case 'multiple_list':
             thisItemSet.toggleClass('selected');
             break;
@@ -53,7 +54,7 @@ container.on('change', 'select.item-set', function(e) {
     handleUserInteraction($(this));
 });
 
-container.on('click', 'input.item-set', function(e) {
+container.on('click change', 'input.item-set', function(e) {
     const thisValue = $(this);
     handleUserInteraction($(this));
     FacetedBrowse.updateSelectList(thisValue.closest('.select-list'));
