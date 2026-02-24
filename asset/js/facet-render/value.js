@@ -92,7 +92,7 @@ container.on('change', 'select.value', function(e) {
 });
 
 // Handle single_list interaction.
-container.on('click change', 'input.value[type="radio"]', function(e) {
+container.on('change', 'input.value[type="radio"]', function(e) {
     const thisValue = $(this);
     const facet = thisValue.closest('.facet');
     const facetId = facet.data('facetId');

@@ -55,7 +55,7 @@ container.on('change', 'select.resource-template', function(e) {
     handleUserInteraction($(this));
 });
 
-container.on('click change', 'input.resource-template', function(e) {
+container.on('change', 'input.resource-template', function(e) {
     const thisValue = $(this);
     const facet = thisValue.closest('.facet');
     const facetId = facet.data('facetId');
