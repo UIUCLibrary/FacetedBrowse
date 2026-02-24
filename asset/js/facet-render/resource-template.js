@@ -30,7 +30,7 @@ const handleUserInteraction = function(thisTemplate) {
         case 'single_list':
             facet.find('.resource-template').not(thisTemplate).removeClass('selected');
             thisTemplate.prop('checked', !thisTemplate.hasClass('selected'));
-            // Fall through to toggle selected class
+            break;
         case 'multiple_list':
             thisTemplate.toggleClass('selected');
             break;
