@@ -1,18 +1,21 @@
-# Accessibility Implementation for Radio Buttons
+# Accessibility Implementation for Radio Buttons and Checkboxes
 
 ## Overview
 
-This module implements **standard, W3C-compliant** radio button accessibility following the [ARIA Radio Group Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/radio/).
+This module implements **standard, W3C-compliant** radio button and checkbox accessibility following:
+- [ARIA Radio Group Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/radio/)
+- [ARIA Checkbox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/)
 
 ## Implementation
 
-Radio buttons use native HTML `<input type="radio">` elements with proper event handling for both mouse and keyboard interactions.
+Radio buttons and checkboxes use native HTML `<input type="radio">` and `<input type="checkbox">` elements with proper event handling for both mouse and keyboard interactions.
 
 ### Event Handlers
 
-All radio button facets listen for both `click` and `change` events:
+All radio button and checkbox facets listen for both `click` and `change` events:
 
 ```javascript
+// Radio buttons (single_list)
 container.on('click change', 'input.value[type="radio"]', function(e) {
     const thisValue = $(this);
     const facet = thisValue.closest('.facet');
@@ -25,12 +28,21 @@ container.on('click change', 'input.value[type="radio"]', function(e) {
     handleUserInteraction(thisValue);
     FacetedBrowse.updateSelectList(thisValue.closest('.select-list'));
 });
+
+// Checkboxes (multiple_list)
+container.on('click change', 'input.value[type="checkbox"]', function(e) {
+    const thisValue = $(this);
+    handleUserInteraction(thisValue);
+    FacetedBrowse.updateSelectList(thisValue.closest('.select-list'));
+});
 ```
 
 - **`click` event**: Fired when user clicks with mouse
-- **`change` event**: Fired when user selects with keyboard (Space/Enter) or arrow keys
+- **`change` event**: Fired when user selects with keyboard (Space/Enter) or when selection changes
 
 ### Standard Keyboard Behavior
+
+#### Radio Buttons (single_list)
 
 The browser provides native radio button keyboard navigation:
 
@@ -44,7 +56,19 @@ The browser provides native radio button keyboard navigation:
 
 **Note**: Arrow keys both move focus AND change selection. This is standard behavior for radio buttons per W3C ARIA guidelines.
 
-### Focus Restoration
+#### Checkboxes (multiple_list)
+
+The browser provides native checkbox keyboard navigation:
+
+| Key | Action |
+|-----|--------|
+| **Tab** | Move focus to the checkbox |
+| **Shift+Tab** | Move focus to previous element |
+| **Space** | Toggle the checkbox state (checked/unchecked) |
+
+**Note**: Unlike radio buttons, checkboxes don't use arrow key navigation. Each checkbox is independent and toggled with the Space key.
+
+### Focus Restoration (Radio Buttons Only)
 
 When a radio button is selected, the page content is updated via AJAX. To maintain accessibility and user context:
 
@@ -71,12 +95,24 @@ This ensures keyboard users don't lose their place in the page after making a se
 
 ### Manual Keyboard Testing
 
+#### Radio Buttons (single_list)
+
 1. Navigate to a faceted browse page with radio button filters
 2. Press **Tab** to focus the first radio button
 3. Use **Arrow Up/Down** to navigate between options
 4. Verify that selection changes and search updates occur
 5. **Verify focus returns to the selected radio button after page update**
 6. Use **Space** to select a radio button
+7. Use **Tab** to move to next facet group
+
+#### Checkboxes (multiple_list)
+
+1. Navigate to a faceted browse page with checkbox filters
+2. Press **Tab** to focus the first checkbox
+3. Press **Space** to toggle the checkbox
+4. Verify that selection changes and search updates occur
+5. Press **Tab** to move to next checkbox
+6. Press **Space** to toggle multiple selections
 7. Use **Tab** to move to next facet group
 
 ### Screen Reader Testing
@@ -88,15 +124,17 @@ Test with:
 - ChromeVox (Chrome)
 
 Expected announcements:
-- "Radio button"
+- "Radio button" or "Checkbox"
 - Current label text
 - State: "checked" or "not checked"
-- Position in group (e.g., "1 of 5")
+- For radio buttons: Position in group (e.g., "1 of 5")
 
 ## References
 
 - [W3C ARIA: Radio Group Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/radio/)
+- [W3C ARIA: Checkbox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/)
 - [MDN: Radio Button Accessibility](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/radio_role)
+- [MDN: Checkbox Accessibility](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox#accessibility_concerns)
 - [WebAIM: Keyboard Accessibility](https://webaim.org/techniques/keyboard/)
 - [W3C: Managing Focus](https://www.w3.org/WAI/WCAG21/Understanding/focus-order.html)
 
