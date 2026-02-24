@@ -296,56 +296,52 @@ const FacetedBrowse = {
     updateSelectList: (selectList, reorder = true) => {
         const facet = selectList.closest('.facet');
         const truncateListItems = selectList.data('truncateListItems');
-        let listItemsSelected, listItemsUnselected;
+        const listItems = selectList.find('.select-list-item');
+        
+        // Get selected and unselected items
+        let listItemsSelected = selectList.find('input.selected').closest('.select-list-item');
+        let listItemsUnselected = selectList.find('input:not(.selected)').closest('.select-list-item');
         
         if (reorder) {
-            // First, sort the selected list items and prepend them to the list.
-            listItemsSelected = selectList.find('input.selected')
-                .closest('.select-list-item')
+            // Sort and reposition selected items at the top
+            listItemsSelected = listItemsSelected
                 .show()
                 .sort(function(a, b) {
-                    // Subtracting seems to be cross-browser compatible.
                     return $(a).data('index') - $(b).data('index');
-                });
-            listItemsSelected.prependTo(selectList);
-            // Then, sort the unselected list items and append them to the list.
-            listItemsUnselected = selectList.find('input:not(.selected)')
-                .closest('.select-list-item')
+                })
+                .prependTo(selectList);
+            // Sort and reposition unselected items at the bottom
+            listItemsUnselected = listItemsUnselected
                 .show()
                 .sort(function(a, b) {
-                    // Subtracting seems to be cross-browser compatible.
                     return $(a).data('index') - $(b).data('index');
-                });
-            listItemsUnselected.appendTo(selectList);
+                })
+                .appendTo(selectList);
         }
         
-        const listItems = selectList.find('.select-list-item');
+        // Handle truncation if configured
         if (!truncateListItems || truncateListItems >= listItems.length) {
-            // No need to show expand when list does not surpass configured limit.
-            if (reorder) {
-                // Items were already shown during reordering
-                return;
+            // No need to truncate - show all items
+            if (!reorder) {
+                listItems.show();
             }
-            // Show all items when no truncation is needed
-            listItems.show();
+            // Hide expand/collapse buttons since no truncation is needed
+            facet.find('.select-list-expand').hide();
+            facet.find('.select-list-collapse').hide();
             return;
         }
+        
         if (selectList.hasClass('expanded')) {
-            // No need to hide items when list is expanded.
+            // List is expanded - show all items
             listItems.show();
             facet.find('.select-list-expand').hide();
             facet.find('.select-list-collapse').show();
             return;
         }
         
-        // Get selected/unselected items if not already retrieved during reordering
-        if (!reorder) {
-            listItemsSelected = selectList.find('input.selected').closest('.select-list-item');
-            listItemsUnselected = selectList.find('input:not(.selected)').closest('.select-list-item');
-        }
-        
+        // Apply truncation
         if (truncateListItems < listItemsSelected.length) {
-            // Show all selected items even if they surpass the configured limit.
+            // Show all selected items even if they surpass the configured limit
             listItemsSelected.show();
             listItemsUnselected.hide();
         } else {
@@ -353,6 +349,8 @@ const FacetedBrowse = {
             listItems.slice(0, truncateListItems).show();
             listItems.slice(truncateListItems).hide();
         }
+        
+        // Update expand button with hidden count
         const hiddenCount = listItems.filter(':hidden').length;
         facet.find('.select-list-hidden-count').text(`(${hiddenCount})`);
         facet.find('.select-list-expand').show();
