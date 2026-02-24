@@ -67,9 +67,7 @@ container.on('change', 'input.resource-template', function(e) {
     }
     
     handleUserInteraction($(this));
-    // Don't reorder list on radio button selection to allow continuous keyboard navigation
-    const reorder = thisValue.attr('type') !== 'radio';
-    FacetedBrowse.updateSelectList(thisValue.closest('.select-list'), reorder);
+    FacetedBrowse.updateSelectList(thisValue.closest('.select-list'));
 });
 
 
