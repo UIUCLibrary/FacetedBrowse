@@ -15,6 +15,13 @@ All radio button facets listen for both `click` and `change` events:
 ```javascript
 container.on('click change', 'input.value[type="radio"]', function(e) {
     const thisValue = $(this);
+    const facet = thisValue.closest('.facet');
+    const facetId = facet.data('facetId');
+    const dataValue = thisValue.data('value');
+    
+    // Save focus state for restoration after page reload
+    FacetedBrowse.setFocusState(facetId, `input.value[type="radio"][data-value="${dataValue}"]`);
+    
     handleUserInteraction(thisValue);
     FacetedBrowse.updateSelectList(thisValue.closest('.select-list'));
 });
@@ -37,12 +44,28 @@ The browser provides native radio button keyboard navigation:
 
 **Note**: Arrow keys both move focus AND change selection. This is standard behavior for radio buttons per W3C ARIA guidelines.
 
+### Focus Restoration
+
+When a radio button is selected, the page content is updated via AJAX. To maintain accessibility and user context:
+
+1. **Before page reload**: The facet ID and radio button selector are saved to the application state
+2. **After page reload**: Focus is automatically restored to the previously selected radio button
+
+This ensures keyboard users don't lose their place in the page after making a selection.
+
+**Implementation details:**
+- `FacetedBrowse.setFocusState(facetId, selector)`: Saves the focus state
+- `FacetedBrowse.restoreFocus()`: Restores focus after content update
+- Focus restoration happens in `page.js` after the AJAX call completes
+
 ### Files Modified
 
-- `asset/js/facet-render/value.js`
-- `asset/js/facet-render/item-set.js`
-- `asset/js/facet-render/resource-class.js`
-- `asset/js/facet-render/resource-template.js`
+- `asset/js/faceted-browse.js` - Added focus state management functions
+- `asset/js/site/page.js` - Added focus restoration after content updates
+- `asset/js/facet-render/value.js` - Save focus state on radio button interaction
+- `asset/js/facet-render/item-set.js` - Save focus state on radio button interaction
+- `asset/js/facet-render/resource-class.js` - Save focus state on radio button interaction
+- `asset/js/facet-render/resource-template.js` - Save focus state on radio button interaction
 
 ## Testing
 
@@ -52,8 +75,9 @@ The browser provides native radio button keyboard navigation:
 2. Press **Tab** to focus the first radio button
 3. Use **Arrow Up/Down** to navigate between options
 4. Verify that selection changes and search updates occur
-5. Use **Space** to select a radio button
-6. Use **Tab** to move to next facet group
+5. **Verify focus returns to the selected radio button after page update**
+6. Use **Space** to select a radio button
+7. Use **Tab** to move to next facet group
 
 ### Screen Reader Testing
 
@@ -74,6 +98,7 @@ Expected announcements:
 - [W3C ARIA: Radio Group Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/radio/)
 - [MDN: Radio Button Accessibility](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/radio_role)
 - [WebAIM: Keyboard Accessibility](https://webaim.org/techniques/keyboard/)
+- [W3C: Managing Focus](https://www.w3.org/WAI/WCAG21/Understanding/focus-order.html)
 
 ## Future Enhancements
 
