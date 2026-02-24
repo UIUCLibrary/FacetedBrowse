@@ -91,7 +91,7 @@ container.on('change', 'select.value', function(e) {
 });
 
 // Handle single_list interaction.
-container.on('click', 'input.value[type="radio"]', function(e) {
+container.on('click change', 'input.value[type="radio"]', function(e) {
     const thisValue = $(this);
     handleUserInteraction(thisValue);
     FacetedBrowse.updateSelectList(thisValue.closest('.select-list'));
