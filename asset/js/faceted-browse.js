@@ -296,10 +296,11 @@ const FacetedBrowse = {
     updateSelectList: (selectList, reorder = true) => {
         const facet = selectList.closest('.facet');
         const truncateListItems = selectList.data('truncateListItems');
+        let listItemsSelected, listItemsUnselected;
         
         if (reorder) {
             // First, sort the selected list items and prepend them to the list.
-            const listItemsSelected = selectList.find('input.selected')
+            listItemsSelected = selectList.find('input.selected')
                 .closest('.select-list-item')
                 .show()
                 .sort(function(a, b) {
@@ -308,7 +309,7 @@ const FacetedBrowse = {
                 });
             listItemsSelected.prependTo(selectList);
             // Then, sort the unselected list items and append them to the list.
-            const listItemsUnselected = selectList.find('input:not(.selected)')
+            listItemsUnselected = selectList.find('input:not(.selected)')
                 .closest('.select-list-item')
                 .show()
                 .sort(function(a, b) {
@@ -318,26 +319,38 @@ const FacetedBrowse = {
             listItemsUnselected.appendTo(selectList);
         }
         
-        const listItems = selectList.find('.select-list-item').show();
+        const listItems = selectList.find('.select-list-item');
         if (!truncateListItems || truncateListItems >= listItems.length) {
             // No need to show expand when list does not surpass configured limit.
+            if (reorder) {
+                // Items were already shown during reordering
+                return;
+            }
+            // Show all items when no truncation is needed
+            listItems.show();
             return;
         }
         if (selectList.hasClass('expanded')) {
             // No need to hide items when list is expanded.
+            listItems.show();
             facet.find('.select-list-expand').hide();
             facet.find('.select-list-collapse').show();
             return;
         }
         
-        const listItemsSelected = selectList.find('input.selected').closest('.select-list-item');
-        const listItemsUnselected = selectList.find('input:not(.selected)').closest('.select-list-item');
+        // Get selected/unselected items if not already retrieved during reordering
+        if (!reorder) {
+            listItemsSelected = selectList.find('input.selected').closest('.select-list-item');
+            listItemsUnselected = selectList.find('input:not(.selected)').closest('.select-list-item');
+        }
         
         if (truncateListItems < listItemsSelected.length) {
             // Show all selected items even if they surpass the configured limit.
+            listItemsSelected.show();
             listItemsUnselected.hide();
         } else {
-            // Truncate to the configured limit.
+            // Show items up to the configured limit, hide the rest
+            listItems.slice(0, truncateListItems).show();
             listItems.slice(truncateListItems).hide();
         }
         const hiddenCount = listItems.filter(':hidden').length;
