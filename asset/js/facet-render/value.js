@@ -105,7 +105,7 @@ container.on('click change', 'input.value[type="radio"]', function(e) {
 });
 
 // Handle multiple_list interaction.
-container.on('click', 'input.value[type="checkbox"]', function(e) {
+container.on('click change', 'input.value[type="checkbox"]', function(e) {
     const thisValue = $(this);
     handleUserInteraction(thisValue);
     FacetedBrowse.updateSelectList(thisValue.closest('.select-list'));
