@@ -316,7 +316,9 @@ const FacetedBrowse = {
         listItemsUnselected.appendTo(selectList);
         const listItems = selectList.find('.select-list-item');
         if (!truncateListItems || truncateListItems >= listItems.length) {
-            // No need to show expand when list does not surpass configured limit.
+            // No need to hide expand when list does not surpass configured limit.
+            facet.find('.select-list-expand').hide();
+            facet.find('.select-list-collapse').hide();
             return;
         }
         if (selectList.hasClass('expanded')) {
