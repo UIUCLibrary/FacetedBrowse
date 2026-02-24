@@ -293,28 +293,32 @@ const FacetedBrowse = {
         return history.state.hasOwnProperty(stateName) ? history.state[stateName] : undefined;
     },
 
-    updateSelectList: selectList => {
+    updateSelectList: (selectList, reorder = true) => {
         const facet = selectList.closest('.facet');
         const truncateListItems = selectList.data('truncateListItems');
-        // First, sort the selected list items and prepend them to the list.
-        const listItemsSelected = selectList.find('input.selected')
-            .closest('.select-list-item')
-            .show()
-            .sort(function(a, b) {
-                // Subtracting seems to be cross-browser compatible.
-                return $(a).data('index') - $(b).data('index');
-            });
-        listItemsSelected.prependTo(selectList);
-        // Then, sort the unselected list items and append them to the list.
-        const listItemsUnselected = selectList.find('input:not(.selected)')
-            .closest('.select-list-item')
-            .show()
-            .sort(function(a, b) {
-                // Subtracting seems to be cross-browser compatible.
-                return $(a).data('index') - $(b).data('index');
-            });
-        listItemsUnselected.appendTo(selectList);
-        const listItems = selectList.find('.select-list-item');
+        
+        if (reorder) {
+            // First, sort the selected list items and prepend them to the list.
+            const listItemsSelected = selectList.find('input.selected')
+                .closest('.select-list-item')
+                .show()
+                .sort(function(a, b) {
+                    // Subtracting seems to be cross-browser compatible.
+                    return $(a).data('index') - $(b).data('index');
+                });
+            listItemsSelected.prependTo(selectList);
+            // Then, sort the unselected list items and append them to the list.
+            const listItemsUnselected = selectList.find('input:not(.selected)')
+                .closest('.select-list-item')
+                .show()
+                .sort(function(a, b) {
+                    // Subtracting seems to be cross-browser compatible.
+                    return $(a).data('index') - $(b).data('index');
+                });
+            listItemsUnselected.appendTo(selectList);
+        }
+        
+        const listItems = selectList.find('.select-list-item').show();
         if (!truncateListItems || truncateListItems >= listItems.length) {
             // No need to show expand when list does not surpass configured limit.
             return;
@@ -325,6 +329,10 @@ const FacetedBrowse = {
             facet.find('.select-list-collapse').show();
             return;
         }
+        
+        const listItemsSelected = selectList.find('input.selected').closest('.select-list-item');
+        const listItemsUnselected = selectList.find('input:not(.selected)').closest('.select-list-item');
+        
         if (truncateListItems < listItemsSelected.length) {
             // Show all selected items even if they surpass the configured limit.
             listItemsUnselected.hide();
