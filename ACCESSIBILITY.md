@@ -10,10 +10,10 @@ Radio buttons use native HTML `<input type="radio">` elements with proper event 
 
 ### Event Handlers
 
-All radio button facets listen for both `click` and `change` events:
+All radio button facets listen for the `change` event:
 
 ```javascript
-container.on('click change', 'input.value[type="radio"]', function(e) {
+container.on('change', 'input.value[type="radio"]', function(e) {
     const thisValue = $(this);
     const facet = thisValue.closest('.facet');
     const facetId = facet.data('facetId');
@@ -27,8 +27,10 @@ container.on('click change', 'input.value[type="radio"]', function(e) {
 });
 ```
 
-- **`click` event**: Fired when user clicks with mouse
-- **`change` event**: Fired when user selects with keyboard (Space/Enter) or arrow keys
+The `change` event fires for all user interactions:
+- Mouse clicks
+- Keyboard selection (Space/Enter keys)
+- Arrow key navigation (which both moves focus AND changes selection per W3C standards)
 
 ### Standard Keyboard Behavior
 
