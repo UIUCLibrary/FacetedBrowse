@@ -23,7 +23,8 @@ container.on('change', 'input.value[type="radio"]', function(e) {
     FacetedBrowse.setFocusState(facetId, `input.value[type="radio"][data-value="${dataValue}"]`);
     
     handleUserInteraction(thisValue);
-    FacetedBrowse.updateSelectList(thisValue.closest('.select-list'));
+    // Don't reorder list to allow continuous keyboard navigation
+    FacetedBrowse.updateSelectList(thisValue.closest('.select-list'), false);
 });
 ```
 
@@ -31,6 +32,8 @@ The `change` event fires for all user interactions:
 - Mouse clicks
 - Keyboard selection (Space/Enter keys)
 - Arrow key navigation (which both moves focus AND changes selection per W3C standards)
+
+**Important**: Radio button selections pass `false` to `updateSelectList()` to disable list reordering. This prevents a keyboard navigation issue where selected items floating to the top would trap users at the second position.
 
 ### Standard Keyboard Behavior
 
@@ -45,6 +48,20 @@ The browser provides native radio button keyboard navigation:
 | **Space** | Select the focused radio button |
 
 **Note**: Arrow keys both move focus AND change selection. This is standard behavior for radio buttons per W3C ARIA guidelines.
+
+### List Reordering Behavior
+
+To support continuous keyboard navigation, radio button selections **do not reorder** the list of options. This prevents the following accessibility issue:
+
+**Problem without this fix:**
+1. User presses Down arrow to select option 2
+2. Option 2 moves to the top of the list
+3. Focus returns to option 2 (now at position 1)
+4. User presses Down arrow again, selecting what's now option 2
+5. User is trapped and cannot advance beyond the second position
+
+**Solution:**
+Radio buttons pass `reorder=false` to `FacetedBrowse.updateSelectList()`, keeping options in their original order. Checkboxes and dropdowns still reorder (`reorder=true`) since they don't have the same keyboard navigation pattern.
 
 ### Focus Restoration
 
