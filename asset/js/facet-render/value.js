@@ -110,7 +110,8 @@ container.on('change', 'input.value[type="radio"]', function(e) {
 container.on('click', 'input.value[type="checkbox"]', function(e) {
     const thisValue = $(this);
     handleUserInteraction(thisValue);
-    FacetedBrowse.updateSelectList(thisValue.closest('.select-list'));
+    // Don't reorder list to maintain focus and allow continuous keyboard navigation
+    FacetedBrowse.updateSelectList(thisValue.closest('.select-list'), false);
 });
 
 // Handle text_input interaction.

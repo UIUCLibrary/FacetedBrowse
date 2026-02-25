@@ -67,9 +67,8 @@ container.on('change', 'input.item-set', function(e) {
     }
     
     handleUserInteraction($(this));
-    // Don't reorder list on radio button selection to allow continuous keyboard navigation
-    const reorder = thisValue.attr('type') !== 'radio';
-    FacetedBrowse.updateSelectList(thisValue.closest('.select-list'), reorder);
+    // Don't reorder list to maintain focus and allow continuous keyboard navigation
+    FacetedBrowse.updateSelectList(thisValue.closest('.select-list'), false);
 });
 
 });

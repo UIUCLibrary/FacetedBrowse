@@ -51,17 +51,20 @@ The browser provides native radio button keyboard navigation:
 
 ### List Reordering Behavior
 
-To support continuous keyboard navigation, radio button selections **do not reorder** the list of options. This prevents the following accessibility issue:
+To support continuous keyboard navigation and maintain focus, **all input selections (radio buttons and checkboxes) do not reorder** the list of options. This prevents the following accessibility issues:
 
 **Problem without this fix:**
-1. User presses Down arrow to select option 2
-2. Option 2 moves to the top of the list
-3. Focus returns to option 2 (now at position 1)
-4. User presses Down arrow again, selecting what's now option 2
-5. User is trapped and cannot advance beyond the second position
+1. User navigates with keyboard and selects an option
+2. The selected option moves to the top of the list
+3. Focus is lost or returns to the top
+4. User cannot continue navigating from their current position
+5. For radio buttons, user is trapped and cannot advance beyond the second position
 
 **Solution:**
-Radio buttons pass `reorder=false` to `FacetedBrowse.updateSelectList()`, keeping options in their original order. Checkboxes and dropdowns still reorder (`reorder=true`) since they don't have the same keyboard navigation pattern.
+All input handlers pass `reorder=false` to `FacetedBrowse.updateSelectList()`, keeping options in their original order. This maintains:
+- Consistent keyboard navigation for all input types
+- Focus position after selection
+- Predictable list order for screen reader users
 
 ### Focus Restoration
 
