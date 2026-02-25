@@ -102,7 +102,8 @@ container.on('change', 'input.value[type="radio"]', function(e) {
     FacetedBrowse.setFocusState(facetId, `input.value[type="radio"][data-value="${dataValue}"]`);
     
     handleUserInteraction(thisValue);
-    FacetedBrowse.updateSelectList(thisValue.closest('.select-list'));
+    // Don't reorder list on radio button selection to allow continuous keyboard navigation
+    FacetedBrowse.updateSelectList(thisValue.closest('.select-list'), false);
 });
 
 // Handle multiple_list interaction.
