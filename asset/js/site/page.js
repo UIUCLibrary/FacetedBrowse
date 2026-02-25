@@ -125,6 +125,7 @@ FacetedBrowse.setStateChangeHandler(function(facetsQuery, sortBy, sortOrder, pag
     $.get(`${urlBrowse}?${queries.join('&')}`).done(function(html) {
         sectionContent.html(html).removeClass('loading');
         setPermalinkFragment();
+        FacetedBrowse.restoreFocus();
     }).fail(failBrowse);
 });
 

@@ -57,6 +57,15 @@ container.on('change', 'select.resource-class', function(e) {
 
 container.on('change', 'input.resource-class', function(e) {
     const thisValue = $(this);
+    const facet = thisValue.closest('.facet');
+    const facetId = facet.data('facetId');
+    const dataValue = thisValue.data('classId');
+    
+    // Save focus state for restoration after page reload (only for radio buttons)
+    if (thisValue.attr('type') === 'radio') {
+        FacetedBrowse.setFocusState(facetId, `input.resource-class[type="radio"][data-class-id="${dataValue}"]`);
+    }
+    
     handleUserInteraction($(this));
     // Don't reorder list to maintain focus and allow continuous keyboard navigation
     FacetedBrowse.updateSelectList(thisValue.closest('.select-list'), false);
