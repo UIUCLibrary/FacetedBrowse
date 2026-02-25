@@ -15,12 +15,6 @@ All radio button facets listen for the `change` event:
 ```javascript
 container.on('change', 'input.value[type="radio"]', function(e) {
     const thisValue = $(this);
-    const facet = thisValue.closest('.facet');
-    const facetId = facet.data('facetId');
-    const dataValue = thisValue.data('value');
-    
-    // Save focus state for restoration after page reload
-    FacetedBrowse.setFocusState(facetId, `input.value[type="radio"][data-value="${dataValue}"]`);
     
     handleUserInteraction(thisValue);
     // Don't reorder list to allow continuous keyboard navigation
@@ -66,28 +60,28 @@ All input handlers pass `reorder=false` to `FacetedBrowse.updateSelectList()`, k
 - Focus position after selection
 - Predictable list order for screen reader users
 
-### Focus Restoration
+### Focus Maintenance
 
-When a radio button is selected, the page content is updated via AJAX. To maintain accessibility and user context:
+When a radio button or checkbox is selected, the browse results are updated via AJAX, but **the sidebar containing the facets is not replaced**. This architectural design naturally maintains focus:
 
-1. **Before page reload**: The facet ID and radio button selector are saved to the application state
-2. **After page reload**: Focus is automatically restored to the previously selected radio button
+1. User selects an input (radio button or checkbox)
+2. AJAX updates only the `#section-content` (browse results area)
+3. The `#section-sidebar` (facets area) remains unchanged
+4. Browser naturally maintains focus on the input element
 
-This ensures keyboard users don't lose their place in the page after making a selection.
-
-**Implementation details:**
-- `FacetedBrowse.setFocusState(facetId, selector)`: Saves the focus state
-- `FacetedBrowse.restoreFocus()`: Restores focus after content update
-- Focus restoration happens in `page.js` after the AJAX call completes
+**No explicit focus restoration is needed** because:
+- The facet inputs are not removed from the DOM during updates
+- Lists are not reordered (`reorder=false`), so elements don't move
+- The browser maintains focus on elements that remain in place
 
 ### Files Modified
 
-- `asset/js/faceted-browse.js` - Added focus state management functions
-- `asset/js/site/page.js` - Added focus restoration after content updates
-- `asset/js/facet-render/value.js` - Save focus state on radio button interaction
-- `asset/js/facet-render/item-set.js` - Save focus state on radio button interaction
-- `asset/js/facet-render/resource-class.js` - Save focus state on radio button interaction
-- `asset/js/facet-render/resource-template.js` - Save focus state on radio button interaction
+- `asset/js/facet-render/value.js` - Pass `reorder=false` for all input selections to maintain list order
+- `asset/js/facet-render/item-set.js` - Pass `reorder=false` for all input selections to maintain list order
+- `asset/js/facet-render/resource-class.js` - Pass `reorder=false` for all input selections to maintain list order
+- `asset/js/facet-render/resource-template.js` - Pass `reorder=false` for all input selections to maintain list order
+
+**Note:** The `reorder` parameter in `FacetedBrowse.updateSelectList()` is still used with its default value (`true`) for initialization and category switching, where reordering selected items to the top makes sense.
 
 ## Testing
 
@@ -97,9 +91,19 @@ This ensures keyboard users don't lose their place in the page after making a se
 2. Press **Tab** to focus the first radio button
 3. Use **Arrow Up/Down** to navigate between options
 4. Verify that selection changes and search updates occur
-5. **Verify focus returns to the selected radio button after page update**
-6. Use **Space** to select a radio button
+5. **Verify focus remains on the selected radio button after browse results update**
+6. Continue using **Arrow Up/Down** to select more options
 7. Use **Tab** to move to next facet group
+
+### Testing Checkboxes
+
+1. Navigate to a faceted browse page with checkbox filters
+2. Press **Tab** to focus a checkbox
+3. Press **Space** to check/uncheck
+4. **Verify focus remains on the checkbox after browse results update**
+5. Use **Tab** to move to next checkbox
+6. Press **Space** to check/uncheck
+7. Verify continuous navigation works smoothly
 
 ### Screen Reader Testing
 
