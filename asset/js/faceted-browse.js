@@ -321,15 +321,12 @@ const FacetedBrowse = {
         
         const listItems = selectList.find('.select-list-item');
         if (!truncateListItems || truncateListItems >= listItems.length) {
-            // No need to hide expand when list does not surpass configured limit.
-            if (reorder) {
-                // Items were already shown during reordering
-                facet.find('.select-list-expand').hide();
-                facet.find('.select-list-collapse').hide();
-                return;
+            // No need to show expand when list does not surpass configured limit.
+            if (!reorder) {
+                // Show all items when no truncation is needed and no reordering happened
+                listItems.show();
             }
-            // Show all items when no truncation is needed
-            listItems.show();
+            // Items were already shown during reordering if reorder=true
             facet.find('.select-list-expand').hide();
             facet.find('.select-list-collapse').hide();
             return;
